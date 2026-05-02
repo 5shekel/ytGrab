@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.1.2
+
 - Add an MSI installer artifact to the release workflow.
 - Update release workflow actions to Node.js 24-compatible versions.
 
