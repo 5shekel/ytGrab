@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Media;
+using Microsoft.Win32;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -18,6 +19,7 @@ internal sealed partial class TrayAppContext : ApplicationContext
     private readonly ToolStripMenuItem outputFolderItem;
     private readonly ToolStripMenuItem beepItem;
     private readonly ToolStripMenuItem openWhenDoneItem;
+    private readonly ToolStripMenuItem startWithWindowsItem;
     private readonly ConcurrentQueue<string> queue = new();
     private readonly HashSet<string> seenUrls = new(StringComparer.OrdinalIgnoreCase);
     private readonly SemaphoreSlim downloaderGate = new(1, 1);
@@ -34,6 +36,7 @@ internal sealed partial class TrayAppContext : ApplicationContext
         outputFolderItem = new ToolStripMenuItem($"Output: {settings.OutputFolder}", null, SelectOutputFolder);
         beepItem = new ToolStripMenuItem("Beep when done", null, ToggleBeep) { Checked = settings.BeepWhenDone };
         openWhenDoneItem = new ToolStripMenuItem("Open folder when done", null, ToggleOpenWhenDone) { Checked = settings.OpenFolderWhenDone };
+        startWithWindowsItem = new ToolStripMenuItem("Start with Windows", null, ToggleStartWithWindows) { Checked = settings.StartWithWindows };
 
         trayIcon = CreateTrayIcon();
         notifyIcon = new NotifyIcon
@@ -51,10 +54,13 @@ internal sealed partial class TrayAppContext : ApplicationContext
             new ToolStripMenuItem("Open output folder", null, (_, _) => OpenOutputFolder()),
             beepItem,
             openWhenDoneItem,
+            startWithWindowsItem,
             new ToolStripSeparator(),
             new ToolStripMenuItem(GetVersionMenuText()) { Enabled = false },
             new ToolStripMenuItem("Exit", null, Exit)
         ]);
+
+        ApplyStartupSetting();
 
         clipboardWatcher = new ClipboardWatcher();
         clipboardWatcher.ClipboardChanged += ClipboardChanged;
@@ -251,6 +257,57 @@ internal sealed partial class TrayAppContext : ApplicationContext
         settings.OpenFolderWhenDone = !settings.OpenFolderWhenDone;
         openWhenDoneItem.Checked = settings.OpenFolderWhenDone;
         settings.Save();
+    }
+
+    private void ToggleStartWithWindows(object? sender, EventArgs e)
+    {
+        var requestedValue = !settings.StartWithWindows;
+
+        try
+        {
+            SetStartupRegistryValue(requestedValue);
+            settings.StartWithWindows = requestedValue;
+            startWithWindowsItem.Checked = requestedValue;
+            settings.Save();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"Could not update Windows startup setting: {ex.Message}",
+                "YtGrab",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+        }
+    }
+
+    private void ApplyStartupSetting()
+    {
+        try
+        {
+            SetStartupRegistryValue(settings.StartWithWindows);
+        }
+        catch
+        {
+            // Startup registration is best-effort; the tray app should still run normally.
+        }
+    }
+
+    private static void SetStartupRegistryValue(bool enabled)
+    {
+        const string runKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
+        const string valueName = "YtGrab";
+
+        using var runKey = Registry.CurrentUser.OpenSubKey(runKeyPath, true) ??
+            Registry.CurrentUser.CreateSubKey(runKeyPath, true);
+
+        if (enabled)
+        {
+            runKey.SetValue(valueName, $"\"{Application.ExecutablePath}\"", RegistryValueKind.String);
+        }
+        else
+        {
+            runKey.DeleteValue(valueName, false);
+        }
     }
 
     private void OpenOutputFolder()

@@ -15,6 +15,8 @@ internal sealed class AppSettings
 
     public bool OpenFolderWhenDone { get; set; } = true;
 
+    public bool StartWithWindows { get; set; } = true;
+
     public static string SettingsPath { get; } = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "YtGrab",
