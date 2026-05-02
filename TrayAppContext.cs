@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Media;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -51,13 +52,28 @@ internal sealed partial class TrayAppContext : ApplicationContext
             beepItem,
             openWhenDoneItem,
             new ToolStripSeparator(),
-            new ToolStripMenuItem($"YtGrab v{Application.ProductVersion}") { Enabled = false },
+            new ToolStripMenuItem(GetVersionMenuText()) { Enabled = false },
             new ToolStripMenuItem("Exit", null, Exit)
         ]);
 
         clipboardWatcher = new ClipboardWatcher();
         clipboardWatcher.ClipboardChanged += ClipboardChanged;
         toolsTask = ToolManager.EnsureToolsAsync(SetStatus);
+    }
+
+    private static string GetVersionMenuText()
+    {
+        var informationalVersion = Assembly.GetExecutingAssembly()
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+            ?.InformationalVersion;
+
+        if (string.IsNullOrWhiteSpace(informationalVersion))
+        {
+            return $"v{Application.ProductVersion}";
+        }
+
+        var parts = informationalVersion.Split('+', 2);
+        return parts.Length == 2 ? $"v{parts[0]} {parts[1]}" : $"v{informationalVersion}";
     }
 
     private void ClipboardChanged(object? sender, EventArgs e)
