@@ -51,6 +51,7 @@ internal sealed partial class TrayAppContext : ApplicationContext
             beepItem,
             openWhenDoneItem,
             new ToolStripSeparator(),
+            new ToolStripMenuItem($"YtGrab v{Application.ProductVersion}") { Enabled = false },
             new ToolStripMenuItem("Exit", null, Exit)
         ]);
 
