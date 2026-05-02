@@ -1,0 +1,16 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+
+  <PropertyGroup>
+    <OutputName>YtGrab</OutputName>
+    <OutputType>Package</OutputType>
+    <ProductVersion>0.1.1</ProductVersion>
+    <PublishDir>$(MSBuildProjectDirectory)\obj\$(Configuration)\publish</PublishDir>
+    <DefineConstants>ProductVersion=$(ProductVersion);PublishDir=$(PublishDir)</DefineConstants>
+    <SuppressIces>ICE91</SuppressIces>
+  </PropertyGroup>
+
+  <Target Name="PublishApp" BeforeTargets="BeforeBuild">
+    <MSBuild Projects="..\YtGrab.csproj" Targets="Publish" Properties="Configuration=$(Configuration);PublishDir=$(PublishDir)\" />
+  </Target>
+
+</Project>

@@ -30,3 +30,11 @@ dotnet build
 ```powershell
 dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
 ```
+
+## Installer
+
+```powershell
+dotnet build Installer\YtGrab.Installer.wixproj -c Release
+```
+
+The MSI is written to `Installer\bin\Release\YtGrab.msi`.

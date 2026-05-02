@@ -1,0 +1,42 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+    Name="YtGrab"
+    Manufacturer="YtGrab"
+    Version="$(var.ProductVersion)"
+    UpgradeCode="{D0E4B36D-3D8E-4D7E-AF6B-3865A652CD22}"
+    Scope="perUser">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of YtGrab is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="INSTALLFOLDER" Name="YtGrab">
+        <Component Id="YtGrabExeComponent" Guid="{E25FD5E7-15F3-4A75-9DD2-6544E2D8A022}">
+          <File Id="YtGrabExe" Source="$(var.PublishDir)\YtGrab.exe" />
+          <RemoveFolder Id="RemoveInstallFolder" On="uninstall" />
+          <RegistryValue Root="HKCU" Key="Software\YtGrab" Name="InstallPath" Type="string" Value="[INSTALLFOLDER]" KeyPath="yes" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="YtGrab">
+        <Component Id="StartMenuShortcutComponent" Guid="{FF0FEF26-4518-41E2-95F3-A167B4421DC5}">
+          <Shortcut
+            Id="StartMenuShortcut"
+            Name="YtGrab"
+            Description="YtGrab clipboard download tray app"
+            Target="[INSTALLFOLDER]YtGrab.exe"
+            WorkingDirectory="INSTALLFOLDER" />
+          <RemoveFolder Id="RemoveApplicationProgramsFolder" On="uninstall" />
+          <RegistryValue Root="HKCU" Key="Software\YtGrab" Name="Installed" Type="integer" Value="1" KeyPath="yes" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+    <Feature Id="MainFeature" Title="YtGrab" Level="1">
+      <ComponentRef Id="YtGrabExeComponent" />
+      <ComponentRef Id="StartMenuShortcutComponent" />
+    </Feature>
+  </Package>
+</Wix>

@@ -27,11 +27,16 @@ jobs:
       - name: Publish
         run: dotnet publish -c Release
 
+      - name: Build MSI
+        run: dotnet build Installer/YtGrab.Installer.wixproj -c Release
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v7
         with:
           name: YtGrab-${{ github.ref_name }}
-          path: bin/Release/net8.0-windows/win-x64/publish/YtGrab.exe
+          path: |
+            bin/Release/net8.0-windows/win-x64/publish/YtGrab.exe
+            Installer/bin/Release/YtGrab.msi
 
       - name: Create GitHub release
         if: startsWith(github.ref, 'refs/tags/')
@@ -41,5 +46,6 @@ jobs:
         run: >-
           gh release create "${{ github.ref_name }}"
           "bin/Release/net8.0-windows/win-x64/publish/YtGrab.exe"
+          "Installer/bin/Release/YtGrab.msi"
           --title "${{ github.ref_name }}"
           --generate-notes
