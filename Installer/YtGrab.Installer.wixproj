@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputName>YtGrab</OutputName>
     <OutputType>Package</OutputType>
-    <ProductVersion>0.1.4</ProductVersion>
+    <ProductVersion>0.1.5</ProductVersion>
     <PublishDir>$(MSBuildProjectDirectory)\obj\$(Configuration)\publish</PublishDir>
     <DefineConstants>ProductVersion=$(ProductVersion);PublishDir=$(PublishDir)</DefineConstants>
     <SuppressIces>ICE61;ICE91</SuppressIces>

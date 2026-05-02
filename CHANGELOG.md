@@ -4,6 +4,10 @@
 
 - Nothing yet.
 
+## 0.1.5
+
+- Check GitHub for bundled yt-dlp updates before downloads while leaving PATH-managed yt-dlp installs untouched.
+
 ## 0.1.4
 
 - Ignore non-media clipboard links instead of attempting failed downloads for generic web pages.
