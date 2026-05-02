@@ -25,6 +25,22 @@ internal sealed partial class TrayAppContext : ApplicationContext
     private readonly SemaphoreSlim downloaderGate = new(1, 1);
     private readonly Task<ToolPaths> toolsTask;
     private static readonly HttpClient HttpClient = new();
+    private static readonly string[] SupportedMediaHosts =
+    [
+        "youtube.com",
+        "youtu.be",
+        "tiktok.com",
+        "instagram.com",
+        "twitter.com",
+        "x.com",
+        "facebook.com",
+        "fb.watch",
+        "vimeo.com",
+        "twitch.tv",
+        "reddit.com",
+        "soundcloud.com",
+        "dailymotion.com"
+    ];
     private bool isDownloading;
 
     public TrayAppContext()
@@ -440,11 +456,19 @@ internal sealed partial class TrayAppContext : ApplicationContext
         {
             var url = match.Value.TrimEnd('.', ',', ')', ']', '}', '>', '"', '\'');
             if (Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
-                (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+                (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps) &&
+                IsSupportedMediaUrl(uri))
             {
                 yield return url;
             }
         }
+    }
+
+    private static bool IsSupportedMediaUrl(Uri uri)
+    {
+        return SupportedMediaHosts.Any(host =>
+            uri.Host.Equals(host, StringComparison.OrdinalIgnoreCase) ||
+            uri.Host.EndsWith("." + host, StringComparison.OrdinalIgnoreCase));
     }
 
     private static string Shorten(string text)

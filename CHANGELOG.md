@@ -4,6 +4,10 @@
 
 - Nothing yet.
 
+## 0.1.4
+
+- Ignore non-media clipboard links instead of attempting failed downloads for generic web pages.
+
 ## 0.1.3
 
 - Launch YtGrab automatically after a successful MSI install.
