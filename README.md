@@ -12,7 +12,7 @@ If `yt-dlp` or `ffmpeg` are not available on `PATH`, YtGrab downloads them into 
 ## Behavior
 
 - Lives in the system tray only.
-- Ignores non-media web links, such as GitHub release pages, instead of sending them to `yt-dlp`.
+- Ignores non-media web links, instead of sending them to `yt-dlp`.
 - Right-click the tray icon for settings.
 - Saves downloads to `%USERPROFILE%\Downloads\YtGrab` by default.
 - Uses the sanitized media title as the output filename. For YouTube links, YtGrab asks YouTube oEmbed for the title before download so filenames do not fall back to ids when `yt-dlp` metadata has an empty title.
